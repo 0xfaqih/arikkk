@@ -36,10 +36,6 @@ async function processWalletInfo() {
         try {
             await getWalletInfo(email);
 
-            const RandomDelay = getRandomDelay();
-            logger.info(`${colors.timerCount} Waiting ${RandomDelay}ms...${colors.reset}`);
-            await delay(RandomDelay);
-
         } catch (error) {
             console.error(`Error processing email ${email}:`, error);
         }
