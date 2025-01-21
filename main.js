@@ -20,39 +20,39 @@ const getRandomDelay = () => {
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 function getAccountFromFile(filePath) {
-    try {
-        const data = fs.readFileSync(filePath, 'utf-8');
-        const jsonData = JSON.parse(data);
-        return jsonData.map(item => item.email);
-    } catch (error) {
-        console.error('Error reading or parsing file:', error);
-        return [];
-    }
+  try {
+    const data = fs.readFileSync(filePath, "utf-8");
+    const jsonData = JSON.parse(data);
+    return jsonData;
+  } catch (error) {
+    console.error("Error reading or parsing file:", error);
+    return [];
+  }
 }
 
 async function processWalletInfo() {
     const emails = getAccountFromFile('account.json');
-    for (let email of emails) {
+    for (let account of emails) {
         try {
-            await getWalletInfo(email);
+            await getWalletInfo(account.email);
 
         } catch (error) {
-            console.error(`Error processing email ${email}:`, error);
+            console.error(`Error processing email ${account.email}:`, error);
         }
     }
 }
 
 async function processDaylyCheckin() {
     const addreses = getAccountFromFile('account.json');
-    for (let address of addreses) {
+    for (let account of addreses) {
         try {
-            await daylyCheckin(address);
+            await daylyCheckin(account.address);
 
             const RandomDelay = getRandomDelay();
             logger.info(`${colors.timerCount} Waiting ${RandomDelay}ms...${colors.reset}`);
             await delay(RandomDelay);
         } catch (error) {
-            console.error(`Error processing address ${address}:`, error);
+            console.error(`Error processing address ${account.address}:`, error);
         }
     }
 }

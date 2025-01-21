@@ -62,11 +62,11 @@ async function daylyCheckin(walletAddress) {
 
         if (response.data.status === 'fail') {
             logger.error(
-                `${colors.warning} Email: ${walletAddress} ${colors.reset} ${colors.error} ${response.data.msg} ${colors.reset}`
+                `${colors.warning} Address: ${walletAddress} ${colors.reset} ${colors.error} ${response.data.msg} ${colors.reset}`
             )
         } else if (response.data.status === 'success') {
             logger.success(
-                `${colors.success} Email: ${walletAddress}${colors.reset} Combo ${colors.success} ${response.data.result.history.combo} ${colors.reset}`
+                `${colors.success} Address: ${walletAddress}${colors.reset} Combo ${colors.success} ${response.data.result.history.combo} ${colors.reset}`
             )
         }
     } catch (error) {
