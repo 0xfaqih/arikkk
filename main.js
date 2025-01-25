@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {getWalletInfo, daylyCheckin} = require('./config/api');
+const {getWalletInfo, daylyCheckin, sendTx} = require('./config/api');
 const logger = require('./config/logger');
 const colors = require('./config/colors');
 
@@ -8,6 +8,10 @@ const CONSTANTS = {
       MIN: 500000,
       MAX: 1000000,
     },
+    AMOUNTS: {
+      MIN: 0.01,
+      MAX: 0.5,
+    },
 }
 
 const getRandomDelay = () => {
@@ -15,6 +19,14 @@ const getRandomDelay = () => {
       Math.random() * (CONSTANTS.DELAYS.MAX - CONSTANTS.DELAYS.MIN + 1) +
         CONSTANTS.DELAYS.MIN
     );
+};
+
+function shortDelay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+const getRandomAmount = () => {
+    return (Math.random() * (CONSTANTS.AMOUNTS.MAX - CONSTANTS.AMOUNTS.MIN) + CONSTANTS.AMOUNTS.MIN).toFixed(3); 
 };
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
@@ -29,6 +41,24 @@ function getAccountFromFile(filePath) {
     return [];
   }
 }
+
+function getRandomAddress() {
+    return new Promise((resolve, reject) => {
+      fs.readFile('wallet.txt', 'utf8', (err, data) => {
+        if (err) {
+          reject('Error membaca file: ' + err);
+          return;
+        }
+  
+        const wallets = data.split('\n').map(line => line.trim()).filter(line => line !== '');
+  
+        const randomIndex = Math.floor(Math.random() * wallets.length);
+        const randomWallet = wallets[randomIndex];
+  
+        resolve(randomWallet);
+      });
+    });
+  }
 
 async function processWalletInfo() {
     const emails = getAccountFromFile('account.json');
@@ -47,6 +77,12 @@ async function processDaylyCheckin() {
     for (let account of addreses) {
         try {
             await daylyCheckin(account.address);
+
+            logger.info(`${colors.timerCount} Waiting 5 seconds${colors.reset}`);
+            await shortDelay(5000);
+
+            const randomAdress = await getRandomAddress();
+            await sendTx(account.email, getRandomAmount(), randomAdress, account.pw);
 
             const RandomDelay = getRandomDelay();
             logger.info(`${colors.timerCount} Waiting ${RandomDelay}ms...${colors.reset}`);

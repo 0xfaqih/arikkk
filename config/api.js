@@ -7,6 +7,7 @@ const WALLET_INFO = `${BASE_URL}/api/wallet/get_list_mobile`;
 const DAILY_CHECKIN = `${BASE_URL}/api/event/checkin`;
 const GET_QUIZ = `${BASE_URL}/api/event/quiz_q`;
 const ANSWER_QUIZ = `${BASE_URL}/api/event/quiz_a`;
+const SEND_TX = `${BASE_URL}/api/wallet/transfer_mobile`;
 
 const RequestHeaders = {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -135,9 +136,40 @@ async function answerQuiz(walletAddress, quizId, answerId) {
     }
 }
 
+async function sendTx(email, amount, toAddress, pw) {
+    try {
+        const data = new URLSearchParams();
+        data.append('blockchain', 'tesnet');
+        data.append('symbol', 'ARI');
+        data.append('lang', 'id');
+        data.append('device', 'app');
+        data.append('is_mobile', 'Y');
+        data.append('email', email);
+        data.append('amount', amount);
+        data.append('to_address', toAddress);
+        data.append('pw', pw);
+
+        const response = await axios({
+            url: SEND_TX,
+            method: 'POST',
+            data: data, 
+            headers: RequestHeaders
+        });
+
+        if (response.data.status === 'success') {
+            logger.success(
+                `${colors.success} email: ${email} ${colors.reset}send to: ${toAddress} Amount: ${amount}${colors.info} ${response.data.result} ${colors.reset}`
+            )
+        } 
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
 module.exports = {
     getWalletInfo,
     daylyCheckin,
     getQuiz,
-    answerQuiz
+    answerQuiz,
+    sendTx
 };
