@@ -122,11 +122,11 @@ async function answerQuiz(walletAddress, quizId, answerId) {
             headers: RequestHeaders
         });
 
-        if (response.data.result.code === '1') {
+        if (response.data.result.msg === 'Already taken quiz.') {
             logger.error(
                 `${colors.warning} Wallet: ${walletAddress} ${colors.reset} ${colors.error} ${response.data.result.msg} ${colors.reset}`
             )
-        } else if (response.data.code === '0') {
+        } else if (response.data.result.msg === 'success') {
             logger.success(
                 `${colors.success} Wallet: ${walletAddress}${colors.reset} Is Answer? ${colors.success} ${response.data.result.history.is_answer} ${colors.reset}`
             )
